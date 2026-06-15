@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kantata AI Revenue Programme</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --k-orange: #ED7111;
+  --k-orange-mid: #E8622A;
+  --k-orange-light: #FDF2EB;
+  --k-purple: #52467F;
+  --k-purple-dark: #3B3358;
+  --k-ink: #26294C;
+  --k-gray: #6C6762;
+  --white: #ffffff;
+  --surface: #F7F7F9;
+  --border: rgba(38,41,76,0.1);
+  --border-strong: rgba(38,41,76,0.2);
+  --text-primary: #16203A;
+  --text-secondary: #52467F;
+  --text-muted: #8A8797;
+  --green: #3B6D11;
+  --amber: #BA7517;
+  --red: #A32D2D;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+html { font-size: 15px; }
+body {
+  font-family: 'Manrope', -apple-system, 'Segoe UI', sans-serif;
+  background: var(--surface);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- LAYOUT --- */
+.shell { max-width: 1020px; margin: 0 auto; padding: 0 24px 60px; }
+
+/* --- TOP BAR --- */
+.topbar {
+  background: var(--k-ink);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-inner {
+  max-width: 1020px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+}
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--k-orange);
+}
+.brand-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: 0.02em;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.topbar-date {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+}
+.edit-toggle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--k-orange);
+  background: rgba(237,113,17,0.12);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+  letter-spacing: 0.02em;
+}
+.edit-toggle:hover { background: rgba(237,113,17,0.22); }
+.edit-toggle.active { background: var(--k-orange); color: #fff; }
+
+/* --- TABS NAV --- */
+.tabs-wrap {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  position: sticky;
+  top: 52px;
+  z-index: 99;
+}
+.tabs-inner {
+  max-width: 1020px;
+  margin: 0 auto;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs-inner::-webkit-scrollbar { display: none; }
+.tab-btn {
+  padding: 0 18px;
+  height: 44px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  letter-spacing: 0.01em;
+}
+.tab-btn:hover { color: var(--text-secondary); }
+.tab-btn.active {
+  color: var(--k-ink);
+  border-bottom-color: var(--k-orange);
+}
+.tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--k-orange);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 5px;
+  margin-left: 5px;
+}
+
+/* --- PANES --- */
+.pane { display: none; padding-top: 28px; }
+.pane.active { display: block; }
+
+/* --- FOCUS ROW --- */
+.focus-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.focus-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+}
+.focus-card.primary {
+  border-left: 3px solid var(--k-orange);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+.focus-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 7px;
+}
+.focus-value {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 20px;
+}
+.focus-value[contenteditable="true"] {
+  outline: none;
+  border-bottom: 1.5px dashed var(--k-orange);
+  padding-bottom: 2px;
+}
+.focus-value[contenteditable="true"]:focus {
+  background: var(--k-orange-light);
+  border-radius: var(--radius-sm);
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
+.edit-hint {
+  font-size: 10px;
+  color: var(--k-orange);
+  margin-top: 6px;
+  display: none;
+}
+.editing .edit-hint { display: block; }
+
+/* --- SECTION LABEL --- */
+.section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+/* --- TASKS --- */
+.tasks-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 24px; }
+.task-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 13px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.12s;
+  user-select: none;
+}
+.task-row:hover { border-color: var(--border-strong); }
+.task-row.done { opacity: 0.45; }
+.task-row.done .task-text { text-decoration: line-through; color: var(--text-muted); }
+.task-check {
+  width: 17px; height: 17px; min-width: 17px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border-strong);
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+  transition: all 0.12s;
+}
+.task-row.done .task-check {
+  background: var(--k-orange);
+  border-color: var(--k-orange);
+}
+.checkmark {
+  width: 9px; height: 6px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
+  display: none;
+}
+.task-row.done .checkmark { display: block; }
+.task-text { font-size: 13px; color: var(--text-primary); line-height: 1.45; flex: 1; }
+.task-due {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  margin-top: 2px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--surface);
+}
+.task-due.urgent {
+  color: var(--k-orange-mid);
+  background: var(--k-orange-light);
+  font-weight: 600;
+}
+.task-due.done-tag { text-decoration: none; color: var(--green); background: #EAF3DE; }
+
+/* --- OVERVIEW INITIATIVE CARDS --- */
+.initiatives-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.init-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.init-card:hover { border-color: var(--border-strong); box-shadow: 0 2px 8px rgba(38,41,76,0.06); }
+.init-card.full { grid-column: 1 / -1; }
+.init-num {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--k-orange);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+.init-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+.init-summary {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+  line-height: 1.45;
+}
+.progress-wrap {
+  height: 3px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 7px;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--k-orange);
+}
+.init-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.init-pct { font-size: 11px; color: var(--text-muted); }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.dot-green { background: var(--green); }
+.dot-amber { background: var(--amber); }
+.dot-red { background: var(--red); }
+.dot-gray { background: #B4B2A9; }
+
+/* --- BLOCKERS --- */
+.blockers-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.blocker-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* --- META PILLS --- */
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+.pill {
+  font-size: 11.5px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.pill.orange {
+  background: var(--k-orange-light);
+  border-color: transparent;
+  color: var(--k-orange-mid);
+  font-weight: 600;
+}
+
+/* --- OWNERS --- */
+.owners { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 14px; }
+.owner-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+.avatar {
+  width: 28px; height: 28px; min-width: 28px;
+  border-radius: 50%;
+  background: var(--k-purple);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  letter-spacing: 0.02em;
+}
+
+/* --- DECK LINK --- */
+.deck-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--k-orange);
+  text-decoration: none;
+  padding: 8px 14px;
+  border: 1px solid rgba(237,113,17,0.25);
+  border-radius: var(--radius-md);
+  background: var(--k-orange-light);
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+.deck-link:hover { background: rgba(237,113,17,0.12); }
+.deck-link svg { width: 14px; height: 14px; }
+
+/* --- EDIT MODE BANNER --- */
+.edit-banner {
+  display: none;
+  background: var(--k-orange-light);
+  border: 1px solid rgba(237,113,17,0.3);
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  font-size: 12.5px;
+  color: var(--k-orange-mid);
+  font-weight: 500;
+  margin-bottom: 18px;
+}
+.editing .edit-banner { display: block; }
+
+/* --- SAVED TOAST --- */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: var(--k-ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s;
+  pointer-events: none;
+  z-index: 9999;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* --- RESPONSIVE --- */
+@media (max-width: 680px) {
+  .focus-row { grid-template-columns: 1fr; }
+  .initiatives-grid { grid-template-columns: 1fr; }
+  .init-card.full { grid-column: 1; }
+  .blockers-grid { grid-template-columns: 1fr; }
+  .shell { padding: 0 14px 60px; }
+  .topbar { padding: 0 14px; }
+  .tabs-wrap { padding: 0 14px; }
+}
+
+/* --- PRINT --- */
+@media print {
+  .topbar, .tabs-wrap { position: static; }
+  .edit-toggle { display: none; }
+  .pane { display: block !important; page-break-before: always; }
+  .pane:first-child { page-break-before: auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-brand">
+      <div class="brand-dot"></div>
+      <span class="brand-name">AI Revenue Programme</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-date" id="live-date"></span>
+      <button class="edit-toggle" id="edit-btn" onclick="toggleEdit()">Edit</button>
+    </div>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs-inner">
+    <button class="tab-btn active" onclick="switchTab('overview',this)">Overview</button>
+    <button class="tab-btn" onclick="switchTab('i1',this)">1 · Optimise</button>
+    <button class="tab-btn" onclick="switchTab('i2',this)">2 · PE Outreach</button>
+    <button class="tab-btn" onclick="switchTab('i3',this)">3 · Account Intel</button>
+    <button class="tab-btn" onclick="switchTab('i4',this)">4 · TAM / ICP</button>
+    <button class="tab-btn" onclick="switchTab('i5',this)">5 · Persona Mapping</button>
+    <button class="tab-btn" onclick="switchTab('adhoc',this)">Ad hoc <span class="tab-badge" id="adhoc-badge">4</span></button>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- OVERVIEW -->
+  <div class="pane active" id="pane-overview">
+    <div class="edit-banner">Edit mode on — click any highlighted field to update. Changes save automatically to this browser.</div>
+
+    <div class="focus-row">
+      <div class="focus-card primary">
+        <div class="focus-label">Today's focus initiative</div>
+        <div class="focus-value" id="ov-focus" data-key="ov-focus">Account Intelligence (I3)</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable today</div>
+        <div class="focus-value" id="ov-today" data-key="ov-today">Competitive briefs sent to pilot team for feedback</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable by EOW</div>
+        <div class="focus-value" id="ov-eow" data-key="ov-eow">Jesse live · NorAm events sent to Caroline · one-pagers to Ben</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+    </div>
+
+    <div class="section-label">Initiative status</div>
+    <div class="initiatives-grid">
+      <div class="init-card" onclick="switchTabByName('i1')">
+        <div class="init-num">Initiative 1</div>
+        <div class="init-title">Supercharge Optimise</div>
+        <div class="init-summary">Deck generator · AI Maturity lead magnet · Sheets-to-Slides</div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:65%"></div></div>
+        <div class="init-footer"><span class="init-pct">65% complete</span><span class="status-dot dot-amber"></span></div>
+      </div>
+      <div class="init-card" onclick="switchTabByName('i2')">
+        <div class="init-num">Initiative 2</div>
+        <div class="init-title">PE Outreach Automation</div>
+        <div class="init-summary">Jesse live · trigger monitor next (Jul)</div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:75%"></div></div>
+        <div class="init-footer"><span class="init-pct">75% complete</span><span class="status-dot dot-green"></span></div>
+      </div>
+      <div class="init-card" onclick="switchTabByName('i3')">
+        <div class="init-num">Initiative 3</div>
+        <div class="init-title">Scalable Account Intelligence</div>
+        <div class="init-summary">Pilot live via Playwright · Gong MCP expansion pending</div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:55%"></div></div>
+        <div class="init-footer"><span class="init-pct">55% complete</span><span class="status-dot dot-green"></span></div>
+      </div>
+      <div class="init-card" onclick="switchTabByName('i4')">
+        <div class="init-num">Initiative 4</div>
+        <div class="init-title">Untapped TAM / ICP Checker</div>
+        <div class="init-summary">45k accounts scoring in progress · Clay next</div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:45%"></div></div>
+        <div class="init-footer"><span class="init-pct">45% complete</span><span class="status-dot dot-amber"></span></div>
+      </div>
+      <div class="init-card full" onclick="switchTabByName('i5')">
+        <div class="init-num">Initiative 5 · The 40%</div>
+        <div class="init-title">Persona, Process and Systems Mapping</div>
+        <div class="init-summary">Cheat sheet and stage map done · Persona cards and activity map next</div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:30%"></div></div>
+        <div class="init-footer"><span class="init-pct">30% complete</span><span class="status-dot dot-amber"></span></div>
+      </div>
+    </div>
+
+    <div class="section-label">Blockers and dependencies</div>
+    <div class="blockers-grid">
+      <div class="blocker-item"><span class="status-dot dot-amber"></span>Gong expanded MCP access — CSM call scheduled</div>
+      <div class="blocker-item"><span class="status-dot dot-amber"></span>Claude enterprise tier rollout — in progress with Taison/Ian</div>
+      <div class="blocker-item"><span class="status-dot dot-green"></span>Jesse sequences — live</div>
+      <div class="blocker-item"><span class="status-dot dot-green"></span>Kathan CRM CSVs — received, script running</div>
+    </div>
+
+    <a class="deck-link" href="https://docs.google.com/presentation/d/1dWtx19hQvbr5zk1PgNX4V0Sv00iEmPNifXNSuNUF4Sc/edit" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Full initiative planner deck
+    </a>
+  </div>
+
+  <!-- I1 OPTIMISE -->
+  <div class="pane" id="pane-i1">
+    <div class="edit-banner">Edit mode on — click any highlighted field to update. Changes save automatically to this browser.</div>
+    <div class="meta-row">
+      <span class="pill orange">In progress</span>
+      <span class="pill">DRI: Danion Hughes</span>
+      <span class="pill">Brent Trimble · Peter Fitzpatrick · Sriram Guntur</span>
+    </div>
+    <div class="focus-row">
+      <div class="focus-card primary">
+        <div class="focus-label">Today's task</div>
+        <div class="focus-value" id="i1-task" data-key="i1-task">Sheets-to-Slides automation build</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable today</div>
+        <div class="focus-value" id="i1-today" data-key="i1-today">—</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable by EOW</div>
+        <div class="focus-value" id="i1-eow" data-key="i1-eow">AI ROI framework slides sent to Brent and Peter</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+    </div>
+    <div class="section-label">Actions</div>
+    <div class="tasks-list" id="tasks-i1"></div>
+    <div class="owners">
+      <div class="owner-row"><div class="avatar">BT</div>Brent Trimble · Value Engineering lead</div>
+      <div class="owner-row"><div class="avatar">PF</div>Peter Fitzpatrick · AI ROI model</div>
+      <div class="owner-row"><div class="avatar">SG</div>Sriram Guntur · Google Sites hosting</div>
+    </div>
+  </div>
+
+  <!-- I2 PE OUTREACH -->
+  <div class="pane" id="pane-i2">
+    <div class="edit-banner">Edit mode on — click any highlighted field to update. Changes save automatically to this browser.</div>
+    <div class="meta-row">
+      <span class="pill orange">Pilot live</span>
+      <span class="pill">DRI: Danion Hughes</span>
+      <span class="pill">Jesse Weber · Partner Alliances</span>
+    </div>
+    <div class="focus-row">
+      <div class="focus-card primary">
+        <div class="focus-label">Today's task</div>
+        <div class="focus-value" id="i2-task" data-key="i2-task">Confirm Jesse is live; review first batch output</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable today</div>
+        <div class="focus-value" id="i2-today" data-key="i2-today">Jesse confirmed live on Tier 1 sequences</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable by EOW</div>
+        <div class="focus-value" id="i2-eow" data-key="i2-eow">In-person sync with Jesse (Tue or Wed UK)</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+    </div>
+    <div class="section-label">Actions</div>
+    <div class="tasks-list" id="tasks-i2"></div>
+    <div class="owners">
+      <div class="owner-row"><div class="avatar">JW</div>Jesse Weber · Partner Alliances — post-build owner</div>
+    </div>
+  </div>
+
+  <!-- I3 ACCOUNT INTELLIGENCE -->
+  <div class="pane" id="pane-i3">
+    <div class="edit-banner">Edit mode on — click any highlighted field to update. Changes save automatically to this browser.</div>
+    <div class="meta-row">
+      <span class="pill orange">Pilot live</span>
+      <span class="pill">DRI: Danion Hughes</span>
+      <span class="pill">Pilot: Ollie · Joséphine · Max · Andy · Jonathan · Joe B</span>
+    </div>
+    <div class="focus-row">
+      <div class="focus-card primary">
+        <div class="focus-label">Today's task</div>
+        <div class="focus-value" id="i3-task" data-key="i3-task">Generate briefs via Playwright · send to pilot team</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable today</div>
+        <div class="focus-value" id="i3-today" data-key="i3-today">Competitive briefs sent to pilot for feedback</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable by EOW</div>
+        <div class="focus-value" id="i3-eow" data-key="i3-eow">Self-serve version ready · Gong MCP expanded</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+    </div>
+    <div class="section-label">Actions</div>
+    <div class="tasks-list" id="tasks-i3"></div>
+    <div class="owners">
+      <div class="owner-row"><div class="avatar">CG</div>Charles Gustine · Competitive intel fold-in</div>
+      <div class="owner-row"><div class="avatar">WS</div>Will Soteros · Future owner, living battlecard</div>
+    </div>
+  </div>
+
+  <!-- I4 TAM / ICP -->
+  <div class="pane" id="pane-i4">
+    <div class="edit-banner">Edit mode on — click any highlighted field to update. Changes save automatically to this browser.</div>
+    <div class="meta-row">
+      <span class="pill orange">In progress</span>
+      <span class="pill">DRI: Danion Hughes</span>
+      <span class="pill">Kathan Shah · GTM Ops</span>
+    </div>
+    <div class="focus-row">
+      <div class="focus-card primary">
+        <div class="focus-label">Today's task</div>
+        <div class="focus-value" id="i4-task" data-key="i4-task">ICP scoring script running on 45k accounts</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable today</div>
+        <div class="focus-value" id="i4-today" data-key="i4-today">45k block complete ahead of steerco</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable by EOW</div>
+        <div class="focus-value" id="i4-eow" data-key="i4-eow">150k block queued · Clay TAM comparison started</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+    </div>
+    <div class="section-label">Actions</div>
+    <div class="tasks-list" id="tasks-i4"></div>
+    <div class="owners">
+      <div class="owner-row"><div class="avatar">KS</div>Kathan Shah · Data and GTM Systems</div>
+    </div>
+  </div>
+
+  <!-- I5 PERSONA -->
+  <div class="pane" id="pane-i5">
+    <div class="edit-banner">Edit mode on — click any highlighted field to update. Changes save automatically to this browser.</div>
+    <div class="meta-row">
+      <span class="pill">In progress · the 40%</span>
+      <span class="pill">DRI: Danion Hughes</span>
+      <span class="pill">Sales Leadership · BD · SE · Enablement</span>
+    </div>
+    <div class="focus-row">
+      <div class="focus-card primary">
+        <div class="focus-label">Today's task</div>
+        <div class="focus-value" id="i5-task" data-key="i5-task">Revenue-generating activities per persona</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable today</div>
+        <div class="focus-value" id="i5-today" data-key="i5-today">—</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable by EOW</div>
+        <div class="focus-value" id="i5-eow" data-key="i5-eow">Persona cards for BD, SE, AE drafted</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+    </div>
+    <div class="section-label">Actions</div>
+    <div class="tasks-list" id="tasks-i5"></div>
+  </div>
+
+  <!-- AD HOC -->
+  <div class="pane" id="pane-adhoc">
+    <div class="edit-banner">Edit mode on — click any highlighted field to update. Changes save automatically to this browser.</div>
+    <div class="focus-row" style="grid-template-columns:1fr 1fr;">
+      <div class="focus-card primary">
+        <div class="focus-label">Key deliverable today</div>
+        <div class="focus-value" id="ah-today" data-key="ah-today">NorAm prospect CSVs to Caroline · Lemlist one-pager final</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+      <div class="focus-card">
+        <div class="focus-label">Key deliverable by EOW</div>
+        <div class="focus-value" id="ah-eow" data-key="ah-eow">Expertise Engine NotebookLM draft · Claude usage guide</div>
+        <div class="edit-hint">Click to edit</div>
+      </div>
+    </div>
+    <div class="section-label">Ad hoc tasks</div>
+    <div class="tasks-list" id="tasks-adhoc"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Saved</div>
+
+<script>
+const STORAGE_KEY = 'kantata_board_v2';
+
+const DEFAULT_TASKS = {
+  i1: [
+    { text: 'VE team meeting held — Brent walked through Optimise workflow', done: true, due: 'Done' },
+    { text: 'AI Maturity Assessment V1 built by Peter — 5 pillars, 24 questions', done: true, due: 'Done' },
+    { text: 'Excel ROI model built in Claude (Woodwing live use)', done: true, due: 'Done' },
+    { text: 'Sriram hosted calculator and dashboard on Google Sites', done: true, due: 'Done' },
+    { text: 'VE call to walk module and lock 16 Jun lead-magnet timeline', done: true, due: 'Done' },
+    { text: 'Marketing to host Maturity Assessment as BDR lead magnet', done: false, due: '16 Jun', urgent: true },
+    { text: 'Build Sheets-to-Slides automation connection', done: false, due: 'Jun', urgent: true },
+    { text: 'Produce branded deck template variants from Woodwing data', done: false, due: 'Jun' },
+    { text: 'Friday review call — agree deck format with Brent and Peter', done: false, due: 'Jun' },
+    { text: 'Build deck generator: data to spreadsheet to branded deck', done: false, due: 'Jun' },
+    { text: 'Rebrand Excel ROI model from Value Engineering to Kantata', done: false, due: 'Jun' },
+    { text: 'Run AI output side-by-side with Brent on a live deal', done: false, due: 'Jul' },
+  ],
+  i2: [
+    { text: '657 PE firms mapped with verified websites (98% match)', done: true, due: 'Done' },
+    { text: '1,275 contacts cleaned, 862 exact title matches', done: true, due: 'Done' },
+    { text: 'Data enriched via Cognism across all 657 firms', done: true, due: 'Done' },
+    { text: 'Individualised sequences built', done: true, due: 'Done' },
+    { text: 'Full HTML playbook delivered to Jesse', done: true, due: 'Done' },
+    { text: 'Met Gong CSM on importing sequences', done: true, due: 'Done' },
+    { text: 'Salesforce internal and AE call — importing variable tags into Gong Engage', done: true, due: 'Done' },
+    { text: 'Go live — first batch of Tier 1 sequences', done: true, due: 'Done' },
+    { text: 'Build trigger monitoring workflow in n8n (~4 weeks)', done: false, due: 'Jul' },
+    { text: 'Measure reply rates against benchmarks', done: false, due: 'Jul' },
+    { text: 'Replicate infrastructure for advisory practice (~4 weeks after)', done: false, due: 'Aug' },
+  ],
+  i3: [
+    { text: 'Briefing tool built and tested with 6 AEs (EMEA and NorAm)', done: true, due: 'Done' },
+    { text: 'Jonathan Chalmers building it into AE onboarding unprompted', done: true, due: 'Done' },
+    { text: 'Security agreed — read-only service account feeding shared Claude project', done: true, due: 'Done' },
+    { text: 'POC security review with Taison and Ian', done: true, due: 'Done' },
+    { text: 'Call with Charles Gustine — competitive intel folded in', done: true, due: 'Done' },
+    { text: 'Gong MCP synthesis tools connected', done: true, due: 'Done' },
+    { text: 'Generate briefs via Playwright — send to pilot for feedback', done: false, due: 'Today', urgent: true },
+    { text: 'Negotiate expanded Gong MCP access — CSM call scheduled', done: false, due: 'This week', urgent: true },
+    { text: 'Build self-serve version for the full deal team', done: false, due: 'Jun' },
+    { text: 'Build Rocketlane v1 at-a-glance as proof of concept', done: false, due: 'Jun' },
+    { text: 'Will Soteros — living battlecard predicting competitor moves', done: false, due: 'Jul' },
+    { text: 'Roll out to full global deal team; handover to Will Soteros', done: false, due: 'Jul' },
+  ],
+  i4: [
+    { text: 'ICP scoring logic built and refined', done: true, due: 'Done' },
+    { text: 'Concept validated with Kathan', done: true, due: 'Done' },
+    { text: 'Security agreed — read-only Salesforce service account scoped by Kathan', done: true, due: 'Done' },
+    { text: 'Kathan shared CRM CSVs (45k ICP accounts + 150k non-ICP)', done: true, due: 'Done' },
+    { text: 'Aligned with Kathan on CRM priorities and the gap identified', done: true, due: 'Done' },
+    { text: 'Script running on 45k ICP accounts (~300/hr)', done: false, due: 'This week', urgent: true },
+    { text: 'Complete 45k block ahead of steerco', done: false, due: 'This week', urgent: true },
+    { text: 'Queue script on 150k non-ICP block', done: false, due: 'Jun' },
+    { text: 'Run Clay TAM comparison against CRM picture', done: false, due: 'Jun' },
+    { text: 'Identify untapped accounts and segment by tier', done: false, due: 'Jul' },
+    { text: 'Build automated outbound for Tier 3', done: false, due: 'Jul' },
+    { text: 'Scale outbound across Tier 3 segment', done: false, due: 'Aug' },
+  ],
+  i5: [
+    { text: 'Sales-process cheat sheet fed into the briefing engine', done: true, due: 'Done' },
+    { text: 'Sales-cycle stages and entry/exit points mapped', done: true, due: 'Done' },
+    { text: 'Stakeholder map built — who to build relationships with per team', done: true, due: 'Done' },
+    { text: 'Turn cheat sheet into crisp list of revenue-generating activities per persona', done: false, due: 'Jun' },
+    { text: 'Build persona cards for BD, SE, AE with sales leaders', done: false, due: 'Jun' },
+    { text: 'Map revenue-generating activities to the 8 sales stages', done: false, due: 'Jul' },
+    { text: 'Overlay current tech stack onto each activity (Lucidchart)', done: false, due: 'Jul' },
+    { text: 'Add AI opportunity layer — rank activities by value to supercharge', done: false, due: 'Jul' },
+    { text: 'Review map with sales leaders and Melissa (SE)', done: false, due: 'Jul' },
+  ],
+  adhoc: [
+    { text: 'NorAm LinkedIn outreach — AE and BDR prospect CSVs enriched and sent to Caroline', done: false, due: 'Today', urgent: true },
+    { text: 'Lemlist one-pager updated — current toolkit vs art of the possible (tools, cost, capability)', done: false, due: 'Today', urgent: true },
+    { text: 'Expertise Engine NotebookLM for EMEA sales — draft for Ben review', done: false, due: 'Tomorrow', urgent: true },
+    { text: 'Claude / AI tool usage guide for GTM — when to use what, token efficiency', done: false, due: 'Jun' },
+  ]
+};
+
+const DEFAULT_FOCUS = {
+  'ov-focus': 'Account Intelligence (I3)',
+  'ov-today': 'Competitive briefs sent to pilot team for feedback',
+  'ov-eow': 'Jesse live · NorAm events sent to Caroline · one-pagers to Ben',
+  'i1-task': 'Sheets-to-Slides automation build',
+  'i1-today': '—',
+  'i1-eow': 'AI ROI framework slides sent to Brent and Peter',
+  'i2-task': 'Confirm Jesse is live; review first batch output',
+  'i2-today': 'Jesse confirmed live on Tier 1 sequences',
+  'i2-eow': 'In-person sync with Jesse (Tue or Wed UK)',
+  'i3-task': 'Generate briefs via Playwright · send to pilot team',
+  'i3-today': 'Competitive briefs sent to pilot for feedback',
+  'i3-eow': 'Self-serve version ready · Gong MCP expanded',
+  'i4-task': 'ICP scoring script running on 45k accounts',
+  'i4-today': '45k block complete ahead of steerco',
+  'i4-eow': '150k block queued · Clay TAM comparison started',
+  'i5-task': 'Revenue-generating activities per persona',
+  'i5-today': '—',
+  'i5-eow': 'Persona cards for BD, SE, AE drafted',
+  'ah-today': 'NorAm prospect CSVs to Caroline · Lemlist one-pager final',
+  'ah-eow': 'Expertise Engine NotebookLM draft · Claude usage guide',
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function saveState() {
+  const state = { tasks: {}, focus: {} };
+  Object.keys(DEFAULT_TASKS).forEach(k => {
+    state.tasks[k] = taskData[k];
+  });
+  Object.keys(DEFAULT_FOCUS).forEach(k => {
+    const el = document.getElementById(k);
+    if (el) state.focus[k] = el.textContent.trim();
+  });
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) {}
+  showToast('Saved');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+const saved = loadState();
+const taskData = {};
+Object.keys(DEFAULT_TASKS).forEach(k => {
+  taskData[k] = saved && saved.tasks && saved.tasks[k] ? saved.tasks[k] : JSON.parse(JSON.stringify(DEFAULT_TASKS[k]));
+});
+
+if (saved && saved.focus) {
+  Object.keys(saved.focus).forEach(k => {
+    DEFAULT_FOCUS[k] = saved.focus[k];
+  });
+}
+
+let editMode = false;
+
+function toggleEdit() {
+  editMode = !editMode;
+  const btn = document.getElementById('edit-btn');
+  btn.textContent = editMode ? 'Done' : 'Edit';
+  btn.classList.toggle('active', editMode);
+  document.body.classList.toggle('editing', editMode);
+  const editables = document.querySelectorAll('[data-key]');
+  editables.forEach(el => {
+    el.contentEditable = editMode ? 'true' : 'false';
+  });
+  if (!editMode) saveState();
+}
+
+function initFocusFields() {
+  Object.keys(DEFAULT_FOCUS).forEach(k => {
+    const el = document.getElementById(k);
+    if (el) {
+      el.textContent = DEFAULT_FOCUS[k];
+      el.contentEditable = 'false';
+      el.addEventListener('blur', () => { if (editMode) saveState(); });
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); el.blur(); }
+      });
+    }
+  });
+}
+
+function renderTasks(containerId, key) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  (taskData[key] || []).forEach((t, i) => {
+    const row = document.createElement('div');
+    row.className = 'task-row' + (t.done ? ' done' : '');
+    const dueClass = t.done ? 'done-tag' : (t.urgent ? 'urgent' : '');
+    const dueLabel = t.done ? 'Done' : t.due;
+    row.innerHTML = `
+      <div class="task-check"><div class="checkmark"></div></div>
+      <span class="task-text">${t.text}</span>
+      <span class="task-due ${dueClass}">${dueLabel}</span>
+    `;
+    row.querySelector('.task-check').addEventListener('click', e => {
+      e.stopPropagation();
+      t.done = !t.done;
+      renderTasks(containerId, key);
+      updateAdhocBadge();
+      saveState();
+    });
+    el.appendChild(row);
+  });
+}
+
+function updateAdhocBadge() {
+  const open = (taskData.adhoc || []).filter(t => !t.done).length;
+  document.getElementById('adhoc-badge').textContent = open;
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pane-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function switchTabByName(id) {
+  const allBtns = document.querySelectorAll('.tab-btn');
+  let targetBtn = null;
+  allBtns.forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + id + "'")) targetBtn = b;
+  });
+  switchTab(id, targetBtn);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('live-date').textContent = new Date().toLocaleDateString('en-GB', {
+  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+});
+
+initFocusFields();
+Object.keys(DEFAULT_TASKS).forEach(k => renderTasks('tasks-' + k, k));
+updateAdhocBadge();
+</script>
+</body>
+</html>
