@@ -738,12 +738,12 @@ body {
     <div class="focus-row" style="grid-template-columns:1fr 1fr;">
       <div class="focus-card primary">
         <div class="focus-label">Key deliverable today</div>
-        <div class="focus-value" id="ah-today" data-key="ah-today">NorAm prospect CSVs to Caroline · Lemlist one-pager final</div>
+        <div class="focus-value" id="ah-today" data-key="ah-today">33 EMEA ABM briefings · AE one-pager for Sean Crafts initiative</div>
         <div class="edit-hint">Click to edit</div>
       </div>
       <div class="focus-card">
         <div class="focus-label">Key deliverable by EOW</div>
-        <div class="focus-value" id="ah-eow" data-key="ah-eow">Expertise Engine NotebookLM draft · Claude usage guide</div>
+        <div class="focus-value" id="ah-eow" data-key="ah-eow">Expertise Engine hosted · Victoria briefings meeting</div>
         <div class="edit-hint">Click to edit</div>
       </div>
     </div>
@@ -768,8 +768,6 @@ const DEFAULT_TASKS = {
     { text: 'Marketing to host Maturity Assessment as BDR lead magnet', done: false, due: '16 Jun', urgent: true },
     { text: 'Build Sheets-to-Slides automation connection', done: false, due: 'Jun', urgent: true },
     { text: 'Produce branded deck template variants from Woodwing data', done: false, due: 'Jun' },
-    { text: 'Friday review call — agree deck format with Brent and Peter', done: false, due: 'Jun' },
-    { text: 'Build deck generator: data to spreadsheet to branded deck', done: false, due: 'Jun' },
     { text: 'Rebrand Excel ROI model from Value Engineering to Kantata', done: false, due: 'Jun' },
     { text: 'Run AI output side-by-side with Brent on a live deal', done: false, due: 'Jul' },
   ],
@@ -782,6 +780,7 @@ const DEFAULT_TASKS = {
     { text: 'Met Gong CSM on importing sequences', done: true, due: 'Done' },
     { text: 'Salesforce internal and AE call — importing variable tags into Gong Engage', done: true, due: 'Done' },
     { text: 'Go live — first batch of Tier 1 sequences', done: true, due: 'Done' },
+    { text: 'Meeting with Rob Gaynor — new partner contact', done: false, due: 'Jun', urgent: true },
     { text: 'Build trigger monitoring workflow in n8n (~4 weeks)', done: false, due: 'Jul' },
     { text: 'Measure reply rates against benchmarks', done: false, due: 'Jul' },
     { text: 'Replicate infrastructure for advisory practice (~4 weeks after)', done: false, due: 'Aug' },
@@ -826,9 +825,10 @@ const DEFAULT_TASKS = {
     { text: 'Review map with sales leaders and Melissa (SE)', done: false, due: 'Jul' },
   ],
   adhoc: [
-    { text: 'NorAm LinkedIn outreach — AE and BDR prospect CSVs enriched and sent to Caroline', done: false, due: 'Today', urgent: true },
-    { text: 'Lemlist one-pager updated — current toolkit vs art of the possible (tools, cost, capability)', done: false, due: 'Today', urgent: true },
-    { text: 'Expertise Engine NotebookLM for EMEA sales — draft for Ben review', done: false, due: 'Tomorrow', urgent: true },
+    { text: 'Expertise Engine HTML file built · meeting with Ian to get it hosted (separate initiative)', done: false, due: 'Jun', urgent: true },
+    { text: 'One-pager visual guide for AEs on Sean Crafts LinkedIn initiative', done: false, due: 'Jun', urgent: true },
+    { text: 'Producing all 33 EMEA ABM account briefings — sharing with Ed and Jon', done: false, due: 'Jun', urgent: true },
+    { text: 'Meeting with Victoria to discuss briefings', done: false, due: 'Jun', urgent: true },
     { text: 'Claude / AI tool usage guide for GTM — when to use what, token efficiency', done: false, due: 'Jun' },
   ]
 };
@@ -852,8 +852,8 @@ const DEFAULT_FOCUS = {
   'i5-task': 'Revenue-generating activities per persona',
   'i5-today': '—',
   'i5-eow': 'Persona cards for BD, SE, AE drafted',
-  'ah-today': 'NorAm prospect CSVs to Caroline · Lemlist one-pager final',
-  'ah-eow': 'Expertise Engine NotebookLM draft · Claude usage guide',
+  'ah-today': '33 EMEA ABM briefings · AE one-pager for Sean Crafts initiative',
+  'ah-eow': 'Expertise Engine hosted · Victoria briefings meeting',
 };
 
 function loadState() {
